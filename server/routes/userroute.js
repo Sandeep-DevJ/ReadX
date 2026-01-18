@@ -34,4 +34,11 @@ router.post("/verifyOtp/:email", verifyOtp);
 // POST /api/user/changePassword/:email
 router.post("/changePassword/:email", changePassword);
 
+router.get("/me", isAuthenticated, (req, res) => {
+  res.json({
+    success: true,
+    user: req.user, // set by isAuthenticated
+  });
+});
+
 export default router;
