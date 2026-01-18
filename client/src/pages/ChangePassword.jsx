@@ -29,7 +29,7 @@ const ChangePassword = () => {
     try {
         setIsLoading(true)
         const response = await axios.post(
-            `http://localhost:8000/user/changePassword/${email}`,
+            `http://localhost:8000/api/user/changePassword/${email}`,
             { newPassword, confirmPassword: confirmNewPassword }
           )
           setSuccess(response.data.message)

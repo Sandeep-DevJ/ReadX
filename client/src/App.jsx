@@ -18,7 +18,7 @@ import Profile from './pages/profile.jsx';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <><Home /></>,
+    element: <ProtectedRoute><Home /></ProtectedRoute>,
   },
  {
     path: "/library",

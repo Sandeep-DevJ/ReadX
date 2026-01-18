@@ -32,7 +32,7 @@ const ForgotPassword = () => {
 
     try {
       setIsloading(true)
-      const res = await axios.post('http://localhost:8000/user/forgotPassword', { email })
+      const res = await axios.post('http://localhost:8000/api/user/forgotPassword', { email })
 
       if (res.data.success) {
         // only do this if your API actually returns user here

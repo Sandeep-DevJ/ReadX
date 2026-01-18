@@ -2,8 +2,10 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
 const Verify = () => {
-  const { token } = useParams(); // Token from URL
+  const { token } = useParams(); // token in /verify/:token
   const [status, setStatus] = useState("Verifying...");
   const navigate = useNavigate();
 
@@ -15,26 +17,26 @@ const Verify = () => {
       }
 
       try {
-        const res = await axios.post(
-          `${import.meta.env.VITE_API_URL}/user/verify`,
-          {}, // Body can be empty; token is in headers
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await axios.get(`${API_URL}/user/verify`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // backend expects Bearer token
+          },
+        });
 
         if (res.data.success) {
-          setStatus("✅ Email Verified Successfully!");
-          // Redirect to login after 2 seconds
+          setStatus("✅ Email verified successfully! Redirecting to login...");
           setTimeout(() => navigate("/login"), 2000);
         } else {
-          setStatus("❌ Invalid or expired token.");
+          setStatus(
+            `❌ Verification failed: ${res.data.message || "Invalid or expired token."}`
+          );
         }
       } catch (error) {
         console.error(error);
-        setStatus("❌ Verification failed. Please try again.");
+        const msg =
+          error.response?.data?.message ||
+          "Verification failed. Please request a new verification email.";
+        setStatus(`❌ ${msg}`);
       }
     };
 

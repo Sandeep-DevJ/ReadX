@@ -87,7 +87,7 @@ const WelcomePage = () => {
   // --- LOGOUT ---
   const LogoutoutHandler = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/user/logout", {}, {
+      const res = await axios.post("http://localhost:8000/api/user/logout", {}, {
         headers: { authorization: `Bearer ${accessToken}` }
       });
       if (res.data.success) {

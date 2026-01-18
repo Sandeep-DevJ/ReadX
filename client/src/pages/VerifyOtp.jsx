@@ -38,7 +38,7 @@ const VerifyOtp = () => {
     try {
       setIsLoading(true)
       const response = await axios.post(
-        `http://localhost:8000/user/verifyOtp/${email}`,
+        `http://localhost:8000/api/user/verifyOtp/${email}`,
         { otp: finalOtp }
       )
       setSuccessMessage(response.data.message)
