@@ -22,17 +22,17 @@ const router = createBrowserRouter([
   },
  {
     path: "/library",
-    element: <ProtectedRoute><Library /></ProtectedRoute>,
+    element: <Library />,
   },
 
    {
     path: "/category",
-    element: <ProtectedRoute><Category /></ProtectedRoute>,
+    element: <Category />,
   },
 
      {
     path: "/profile",
-    element: <ProtectedRoute><Profile /></ProtectedRoute>,
+    element: <Profile />,
   },
 
   {
