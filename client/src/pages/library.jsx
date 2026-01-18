@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Search, BookOpen, Clock, Save, CheckCircle2, X, Plus, Trash2 } from 'lucide-react';
@@ -34,8 +34,7 @@ import coverC10 from '../assets/c10.png'; import pdfC10 from '../assets/C10.pdf'
 
 // --- Series S (Science) ---
 import coverS1 from '../assets/s1.png';
-// ⚠️ FIX: s1.pdf was missing in your folder, using 1st.pdf as placeholder to prevent crash
-import pdfS1 from '../assets/1st.pdf';   
+import pdfS1 from '../assets/1st.pdf';
 
 import coverS2 from '../assets/s2.png';   import pdfS2 from '../assets/s2.pdf';
 import coverS3 from '../assets/s3.png';   import pdfS3 from '../assets/s3.pdf';
@@ -48,7 +47,6 @@ import coverS9 from '../assets/s9.png';   import pdfS9 from '../assets/s9.pdf';
 import coverS10 from '../assets/s10.png'; import pdfS10 from '../assets/s10.pdf';
 
 // --- Series SC (Classics) ---
-// ⚠️ FIX: Using .jpg because your screenshot showed sc1.jpg
 import coverSC1 from '../assets/sc1.jpg'; import pdfSC1 from '../assets/sc1.pdf';
 import coverSC2 from '../assets/sc2.png'; import pdfSC2 from '../assets/sc2.pdf';
 import coverSC3 from '../assets/sc3.png'; import pdfSC3 from '../assets/sc3.pdf';
@@ -56,24 +54,23 @@ import coverSC4 from '../assets/sc4.png'; import pdfSC4 from '../assets/sc4.pdf'
 import coverSC5 from '../assets/sc5.png'; import pdfSC5 from '../assets/sc5.pdf';
 import coverSC6 from '../assets/sc6.png'; import pdfSC6 from '../assets/sc6.pdf';
 
-
 // ================= BOOK DATABASE =================
 const ALL_BOOKS = [
-  // --- Original 1-5 ---
+  // Original 1-5
   { id: 1, title: "The Great Gatsby", author: "F. Scott Fitzgerald", category: "Classic", cover: cover1, pdf: pdf1, totalPages: 200 },
   { id: 2, title: "Atomic Habits", author: "James Clear", category: "Self-Help", cover: cover2, pdf: pdf2, totalPages: 300 },
   { id: 3, title: "Deep Work", author: "Cal Newport", category: "Productivity", cover: cover3, pdf: pdf3, totalPages: 250 },
   { id: 4, title: "1984", author: "George Orwell", category: "Classic", cover: cover4, pdf: pdf4, totalPages: 328 },
   { id: 5, title: "React Patterns", author: "Michael Chan", category: "Tech", cover: cover5, pdf: pdf5, totalPages: 220 },
-  
-  // --- Series 6-10 ---
+
+  // 6-10
   { id: 6, title: "The Pragmatic Programmer", author: "Andrew Hunt", category: "Tech", cover: cover6, pdf: pdf6, totalPages: 350 },
   { id: 7, title: "Clean Code", author: "Robert C. Martin", category: "Tech", cover: cover7, pdf: pdf7, totalPages: 460 },
   { id: 8, title: "Thinking Fast and Slow", author: "Daniel Kahneman", category: "Psychology", cover: cover8, pdf: pdf8, totalPages: 499 },
   { id: 9, title: "Sapiens", author: "Yuval Noah Harari", category: "History", cover: cover9, pdf: pdf9, totalPages: 440 },
   { id: 10, title: "The Alchemist", author: "Paulo Coelho", category: "Fiction", cover: cover10, pdf: pdf10, totalPages: 180 },
 
-  // --- C Series (Tech) ---
+  // C series
   { id: 11, title: "C++ Primer", author: "Stanley Lippman", category: "Tech", cover: coverC1, pdf: pdfC1, totalPages: 900 },
   { id: 12, title: "Effective Modern C++", author: "Scott Meyers", category: "Tech", cover: coverC2, pdf: pdfC2, totalPages: 300 },
   { id: 13, title: "The C Programming Language", author: "Brian Kernighan", category: "Tech", cover: coverC3, pdf: pdfC3, totalPages: 280 },
@@ -85,7 +82,7 @@ const ALL_BOOKS = [
   { id: 19, title: "C Pointers", author: "Kenneth Reek", category: "Tech", cover: coverC9, pdf: pdfC9, totalPages: 250 },
   { id: 20, title: "Accelerated C++", author: "Andrew Koenig", category: "Tech", cover: coverC10, pdf: pdfC10, totalPages: 300 },
 
-  // --- S Series (Science / Self-Help) ---
+  // S series
   { id: 21, title: "Cosmos", author: "Carl Sagan", category: "Science", cover: coverS1, pdf: pdfS1, totalPages: 380 },
   { id: 22, title: "A Brief History of Time", author: "Stephen Hawking", category: "Science", cover: coverS2, pdf: pdfS2, totalPages: 256 },
   { id: 23, title: "The Selfish Gene", author: "Richard Dawkins", category: "Science", cover: coverS3, pdf: pdfS3, totalPages: 360 },
@@ -97,7 +94,7 @@ const ALL_BOOKS = [
   { id: 29, title: "Breath", author: "James Nestor", category: "Health", cover: coverS9, pdf: pdfS9, totalPages: 300 },
   { id: 30, title: "The Body", author: "Bill Bryson", category: "Science", cover: coverS10, pdf: pdfS10, totalPages: 450 },
 
-  // --- SC Series (Classics / Academic) ---
+  // SC series
   { id: 31, title: "Physics of the Impossible", author: "Michio Kaku", category: "Science", cover: coverSC1, pdf: pdfSC1, totalPages: 320 },
   { id: 32, title: "Structure of Scientific Revolutions", author: "Thomas Kuhn", category: "Academic", cover: coverSC2, pdf: pdfSC2, totalPages: 210 },
   { id: 33, title: "The Republic", author: "Plato", category: "Classic", cover: coverSC3, pdf: pdfSC3, totalPages: 400 },
@@ -108,11 +105,14 @@ const ALL_BOOKS = [
 
 const LibraryPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const navOpenBookId = location.state?.openBookId || null;
   const navJumpToPage = location.state?.jumpToPage || null;
 
-  // Start books at page 1 to avoid page=0 issues
-  const [books, setBooks] = useState(ALL_BOOKS.map(b => -({ ...b, progress: 0, currentPage: 1 })));
+  const [books, setBooks] = useState(
+    ALL_BOOKS.map(b => ({ ...b, progress: 0, currentPage: 1 }))
+  );
   const [savedBookIds, setSavedBookIds] = useState([]);
   const [openPdfId, setOpenPdfId] = useState(null);
   const [pageInput, setPageInput] = useState(1);
@@ -123,7 +123,6 @@ const LibraryPage = () => {
 
   const isLoggedIn = !!localStorage.getItem("accessToken");
 
-  // preload notes for open book
   useEffect(() => {
     if (openPdfId) {
       const b = books.find(b => b.id === openPdfId);
@@ -131,7 +130,6 @@ const LibraryPage = () => {
     }
   }, [openPdfId, books]);
 
-  // fetch saved library/progress
   useEffect(() => {
     const fetchUserLibrary = async () => {
       if (!isLoggedIn) return;
@@ -147,7 +145,6 @@ const LibraryPage = () => {
           const savedIds = userProgress.map(item => item.bookId);
           setSavedBookIds(savedIds);
 
-          // Merge saved backend progress with static book data
           const updatedBooks = ALL_BOOKS.map(book => {
             const saved = userProgress.find(p => p.bookId === book.id);
             if (saved) {
@@ -170,7 +167,6 @@ const LibraryPage = () => {
     fetchUserLibrary();
   }, [isLoggedIn]);
 
-  // Auto-open from “Continue Reading” navigation (WelcomePage)
   useEffect(() => {
     if (!navOpenBookId) return;
     const target = books.find(b => b.id === navOpenBookId);
@@ -228,7 +224,7 @@ const LibraryPage = () => {
         setSavedBookIds(prev => [...prev, book.id]);
       }
     } catch (error) {
-      console.error("❌ Full Save Error:", error.response);
+      console.error("Save Error:", error.response);
       toast.error(error.response?.data?.message || "Failed to save book");
     }
   };
@@ -275,8 +271,6 @@ const LibraryPage = () => {
 
       if (res.data.success) {
         toast.success("✅ Progress Saved!");
-
-        // Update local UI immediately
         setBooks(prevBooks => prevBooks.map(b => {
           if (b.id === book.id) {
             const newProgressPercent = Math.round((newPage / b.totalPages) * 100);
@@ -300,40 +294,53 @@ const LibraryPage = () => {
   });
 
   const getProgressColor = (progress) => {
-    if (progress === 100) return "bg-green-500";
-    if (progress > 50) return "bg-blue-500";
-    if (progress > 0) return "bg-yellow-500";
-    return "bg-gray-300";
+    if (progress === 100) return "bg-emerald-500";
+    if (progress > 50) return "bg-sky-500";
+    if (progress > 0) return "bg-amber-500";
+    return "bg-slate-700";
   };
 
   const currentOpenBook = books.find(b => b.id === openPdfId);
   const pageForIframe = Math.max(1, Number(pageInput) || (currentOpenBook?.currentPage || 1));
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 px-4 pb-16">
+    <div className="min-h-screen bg-slate-950 text-slate-50 pt-24 px-4 pb-16">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Digital Library</h1>
-          <p className="text-gray-600">
-            {isLoggedIn ? `Your saved library: ${savedBookIds.length} books` : "Login to save your reading progress"}
-          </p>
+        {/* HEADER + BACK BUTTON */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+              My <span className="text-orange-400">Library</span>
+            </h1>
+            <p className="text-slate-400 mt-1 text-sm">
+              {isLoggedIn
+                ? `You have ${savedBookIds.length} saved books. Keep reading!`
+                : "Login to save your reading progress and notes."}
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/')}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-700 text-sm font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition-colors"
+          >
+            ← Back to Home
+          </button>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white p-4 rounded-xl shadow-sm border flex flex-col md:flex-row gap-4 mb-8">
+        {/* FILTERS */}
+        <div className="bg-slate-900/80 p-4 rounded-xl shadow border border-slate-800 flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-3 h-5 w-5 text-slate-500" />
             <input
               type="text"
               placeholder="Search books by title or author..."
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
           <select
-            className="p-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="p-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
@@ -354,13 +361,21 @@ const LibraryPage = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowOnlyLibrary(false)}
-                className={`px-4 py-2 rounded-lg transition-colors ${!showOnlyLibrary ? "bg-green-500 text-white" : "bg-gray-200"}`}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  !showOnlyLibrary
+                    ? "bg-emerald-500 text-white"
+                    : "bg-slate-900 border border-slate-700 text-slate-200"
+                }`}
               >
                 All Books
               </button>
               <button
                 onClick={() => setShowOnlyLibrary(true)}
-                className={`px-4 py-2 rounded-lg transition-colors ${showOnlyLibrary ? "bg-green-500 text-white" : "bg-gray-200"}`}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  showOnlyLibrary
+                    ? "bg-emerald-500 text-white"
+                    : "bg-slate-900 border border-slate-700 text-slate-200"
+                }`}
               >
                 My Library
               </button>
@@ -368,7 +383,7 @@ const LibraryPage = () => {
           )}
         </div>
 
-        {/* Books grid */}
+        {/* BOOK GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredBooks.length > 0 ? (
             filteredBooks.map((book) => {
@@ -376,7 +391,7 @@ const LibraryPage = () => {
               return (
                 <div
                   key={book.id}
-                  className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 relative group"
+                  className="bg-slate-900 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-800 relative group"
                 >
                   <div className="absolute top-2 left-2 z-10">
                     {savedBookIds.includes(book.id) ? (
@@ -389,7 +404,7 @@ const LibraryPage = () => {
                     ) : (
                       <button
                         onClick={() => handleAddToLibrary(book)}
-                        className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow flex items-center gap-1 hover:bg-green-600 transition-colors"
+                        className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow flex items-center gap-1 hover:bg-emerald-400 transition-colors"
                       >
                         <Plus size={12} /> Add
                       </button>
@@ -397,24 +412,28 @@ const LibraryPage = () => {
                   </div>
 
                   {bookData.progress === 100 ? (
-                    <div className="absolute top-2 right-2 z-10 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow">
+                    <div className="absolute top-2 right-2 z-10 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow">
                       <CheckCircle2 size={12} /> Finished
                     </div>
                   ) : bookData.progress > 0 && (
-                    <div className="absolute top-2 right-2 z-10 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow">
+                    <div className="absolute top-2 right-2 z-10 bg-sky-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow">
                       <Clock size={12} /> {bookData.progress}%
                     </div>
                   )}
 
-                  <div className="h-64 relative bg-gray-200">
-                    <img src={book.cover} alt={book.title} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="h-64 relative bg-slate-800">
+                    <img
+                      src={book.cover}
+                      alt={book.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <button
                         onClick={() => {
                           setOpenPdfId(book.id);
                           setPageInput(Math.max(1, Number(bookData.currentPage || 1)));
                         }}
-                        className="bg-white text-black px-6 py-2 rounded-full font-bold hover:bg-green-500 hover:text-white transition-colors flex items-center gap-2"
+                        className="bg-white text-slate-900 px-6 py-2 rounded-full font-bold hover:bg-emerald-500 hover:text-white transition-colors flex items-center gap-2"
                       >
                         <BookOpen size={18} /> Read Now
                       </button>
@@ -422,56 +441,75 @@ const LibraryPage = () => {
                   </div>
 
                   <div className="p-4">
-                    <h3 className="font-bold text-lg truncate">{book.title}</h3>
-                    <p className="text-gray-500 text-sm mb-4">{book.author}</p>
+                    <h3 className="font-bold text-lg truncate text-slate-50">
+                      {book.title}
+                    </h3>
+                    <p className="text-slate-400 text-sm mb-4">{book.author}</p>
 
                     {bookData.progress > 0 && (
-                      <div className="border-t pt-3">
-                        <div className="flex justify-between text-xs text-gray-500 mb-1">
+                      <div className="border-t border-slate-800 pt-3">
+                        <div className="flex justify-between text-xs text-slate-400 mb-1">
                           <span>Reading Progress</span>
-                          <span>{bookData.currentPage} / {bookData.totalPages || book.totalPages}</span>
+                          <span>
+                            {bookData.currentPage} / {bookData.totalPages || book.totalPages}
+                          </span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="w-full bg-slate-800 rounded-full h-2">
                           <div
-                            className={`h-2 rounded-full transition-all duration-500 ${getProgressColor(bookData.progress)}`}
+                            className={`h-2 rounded-full transition-all duration-500 ${getProgressColor(
+                              bookData.progress
+                            )}`}
                             style={{ width: `${bookData.progress}%` }}
-                          ></div>
+                          />
                         </div>
                       </div>
                     )}
                   </div>
                 </div>
-              )
+              );
             })
           ) : (
             <div className="col-span-full text-center py-20">
-              <p className="text-gray-500 text-lg">No books found matching your filters</p>
+              <p className="text-slate-500 text-lg">
+                No books found matching your filters
+              </p>
             </div>
           )}
         </div>
 
-        {/* Standard Browser Modal (No 404) */}
+        {/* MODAL */}
         {openPdfId && currentOpenBook && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-            <div className="bg-white w-full max-w-6xl h-[90vh] rounded-xl overflow-hidden flex flex-col shadow-2xl">
+            <div className="bg-slate-950 w-full max-w-6xl h-[90vh] rounded-xl overflow-hidden flex flex-col shadow-2xl border border-slate-800">
               {/* Header */}
-              <div className="bg-gray-50 p-4 border-b flex justify-between items-center">
-                <h2 className="font-bold text-lg truncate">{currentOpenBook.title}</h2>
+              <div className="bg-slate-900 p-4 border-b border-slate-800 flex justify-between items-center">
+                <div>
+                  <h2 className="font-bold text-lg truncate text-slate-50">
+                    {currentOpenBook.title}
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    {currentOpenBook.author}
+                  </p>
+                </div>
 
                 <div className="flex items-center gap-4">
                   {isLoggedIn && (
-                    <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border shadow-sm">
-                      <span className="text-sm font-medium">Page:</span>
+                    <div className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg shadow-sm">
+                      <span className="text-sm font-medium text-slate-100">
+                        Page:
+                      </span>
                       <input
                         type="number"
-                        className="w-16 border rounded p-1 text-center"
+                        className="w-16 bg-slate-950 border border-slate-700 rounded p-1 text-center text-sm text-slate-50"
                         value={pageInput}
                         onChange={(e) => setPageInput(e.target.value)}
                       />
-                      <span className="text-sm text-gray-500">/ {currentOpenBook.totalPages}</span>
+                      <span className="text-sm text-slate-400">
+                        / {currentOpenBook.totalPages}
+                      </span>
                       <button
                         onClick={() => handleSaveProgress(currentOpenBook)}
-                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 flex items-center gap-1 text-sm font-medium transition-colors"
+                        className="bg-sky-600 text-white px-3 py-1 rounded hover:bg-sky-500 flex items-center gap-1 text-sm font-medium transition-colors"
                       >
                         <Save size={14} /> Save
                       </button>
@@ -480,7 +518,7 @@ const LibraryPage = () => {
 
                   <button
                     onClick={() => setOpenPdfId(null)}
-                    className="p-2 hover:bg-red-100 hover:text-red-600 rounded-full transition-colors"
+                    className="p-2 hover:bg-red-500/10 text-slate-500 hover:text-red-400 rounded-full transition-colors"
                   >
                     <X size={24} />
                   </button>
@@ -488,9 +526,9 @@ const LibraryPage = () => {
               </div>
 
               {/* Notes */}
-              <div className="p-3 bg-gray-50 flex gap-2 items-start border-b">
+              <div className="p-3 bg-slate-900 flex gap-2 items-start border-b border-slate-800">
                 <textarea
-                  className="flex-1 border rounded-md p-2 text-sm"
+                  className="flex-1 border border-slate-700 rounded-md p-2 text-sm bg-slate-950 text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/60"
                   rows={2}
                   placeholder="Book notes..."
                   value={notes}
@@ -498,20 +536,19 @@ const LibraryPage = () => {
                 />
                 <button
                   onClick={() => handleSaveNotes(currentOpenBook.id)}
-                  className="px-3 py-2 bg-purple-600 text-white rounded-md text-xs hover:bg-purple-700"
+                  className="px-3 py-2 bg-purple-600 text-white rounded-md text-xs hover:bg-purple-500 transition-colors shadow-sm"
                 >
                   Save Notes
                 </button>
               </div>
 
-              {/* PDF */}
-              <div className="flex-1 bg-gray-200 relative">
-                {/* Standard Browser PDF Viewer with #page support */}
-                <iframe 
+              {/* PDF viewer */}
+              <div className="flex-1 bg-slate-900 relative">
+                <iframe
                   key={`${openPdfId}-${pageForIframe}`}
-                  src={`${currentOpenBook.pdf}#page=${pageForIframe}&toolbar=0`} 
-                  className="w-full h-full absolute inset-0 border-0" 
-                  title={currentOpenBook.title} 
+                  src={`${currentOpenBook.pdf}#page=${pageForIframe}&toolbar=0`}
+                  className="w-full h-full absolute inset-0 border-0"
+                  title={currentOpenBook.title}
                 />
               </div>
             </div>

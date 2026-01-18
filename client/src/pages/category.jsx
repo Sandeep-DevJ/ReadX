@@ -52,10 +52,9 @@ import coverSC6 from '../assets/sc6.png'; import pdfSC6 from '../assets/sc6.pdf'
 import coverSC7 from '../assets/sc7.png'; import pdfSC7 from '../assets/sc7.pdf';
 import coverSC8 from '../assets/sc8.png'; import pdfSC8 from '../assets/sc8.pdf';
 
-
 // ================= BOOK DATABASE =================
 const ALL_BOOKS = [
-  // --- Programming (Tech) ---
+  // Programming
   { id: 1, title: "C++ Programming", author: "Tech Series", category: "Programming", cover: cover1, pdf: pdf1, totalPages: 200 },
   { id: 2, title: "Advanced C++", author: "Tech Series", category: "Programming", cover: cover2, pdf: pdf2, totalPages: 300 },
   { id: 3, title: "Data Structures", author: "Tech Series", category: "Programming", cover: cover3, pdf: pdf3, totalPages: 250 },
@@ -67,7 +66,7 @@ const ALL_BOOKS = [
   { id: 9, title: "Node JS", author: "Tech Series", category: "Programming", cover: cover9, pdf: pdf9, totalPages: 440 },
   { id: 10, title: "Database Design", author: "Tech Series", category: "Programming", cover: cover10, pdf: pdf10, totalPages: 180 },
 
-  // --- Comics (C Series) ---
+  // Comics
   { id: 11, title: "Comic Vol 1", author: "Comic World", category: "Comics", cover: coverC1, pdf: pdfC1, totalPages: 100 },
   { id: 12, title: "Comic Vol 2", author: "Comic World", category: "Comics", cover: coverC2, pdf: pdfC2, totalPages: 100 },
   { id: 13, title: "Comic Vol 3", author: "Comic World", category: "Comics", cover: coverC3, pdf: pdfC3, totalPages: 100 },
@@ -79,7 +78,7 @@ const ALL_BOOKS = [
   { id: 19, title: "Comic Vol 9", author: "Comic World", category: "Comics", cover: coverC9, pdf: pdfC9, totalPages: 100 },
   { id: 20, title: "Comic Vol 10", author: "Comic World", category: "Comics", cover: coverC10, pdf: pdfC10, totalPages: 100 },
 
-  // --- Self-Help (S Series) ---
+  // Self-Help
   { id: 21, title: "Mindset", author: "Life Coach", category: "Self-Help", cover: coverS1, pdf: pdfS1, totalPages: 380 },
   { id: 22, title: "Growth", author: "Life Coach", category: "Self-Help", cover: coverS2, pdf: pdfS2, totalPages: 256 },
   { id: 23, title: "Focus", author: "Life Coach", category: "Self-Help", cover: coverS3, pdf: pdfS3, totalPages: 360 },
@@ -91,7 +90,7 @@ const ALL_BOOKS = [
   { id: 29, title: "Breath", author: "Life Coach", category: "Self-Help", cover: coverS9, pdf: pdfS9, totalPages: 300 },
   { id: 30, title: "Body", author: "Life Coach", category: "Self-Help", cover: coverS10, pdf: pdfS10, totalPages: 450 },
 
-  // --- Science (SC Series) ---
+  // Science
   { id: 31, title: "Physics 101", author: "Science Hub", category: "Science", cover: coverSC1, pdf: pdfSC1, totalPages: 320 },
   { id: 32, title: "Chemistry", author: "Science Hub", category: "Science", cover: coverSC2, pdf: pdfSC2, totalPages: 210 },
   { id: 33, title: "Biology", author: "Science Hub", category: "Science", cover: coverSC3, pdf: pdfSC3, totalPages: 400 },
@@ -117,7 +116,6 @@ const CategoryPage = () => {
   
   const isLoggedIn = !!localStorage.getItem("accessToken");
 
-  // Fetch Library to see what is saved
   useEffect(() => {
     const fetchUserLibrary = async () => {
       if (!isLoggedIn) return;
@@ -137,27 +135,25 @@ const CategoryPage = () => {
     fetchUserLibrary();
   }, [isLoggedIn]);
 
-  // Load saved page when opening a book
   const handleOpenBook = async (book) => {
     setOpenPdfId(book.id);
-    setPageInput(1); // Default to 1
+    setPageInput(1);
 
     if (isLoggedIn) {
-        try {
-            const token = localStorage.getItem("accessToken");
-            // Check if there is saved progress
-            const res = await axios.get("http://localhost:8000/api/library/my-library", {
-                headers: { authorization: `Bearer ${token}` }
-            });
-            if(res.data.success) {
-                const savedBook = res.data.userProgress.find(p => p.bookId === book.id);
-                if(savedBook && savedBook.currentPage > 0) {
-                    setPageInput(savedBook.currentPage);
-                }
-            }
-        } catch(e) {
-            console.error(e);
+      try {
+        const token = localStorage.getItem("accessToken");
+        const res = await axios.get("http://localhost:8000/api/library/my-library", {
+          headers: { authorization: `Bearer ${token}` }
+        });
+        if(res.data.success) {
+          const savedBook = res.data.userProgress.find(p => p.bookId === book.id);
+          if(savedBook && savedBook.currentPage > 0) {
+            setPageInput(savedBook.currentPage);
+          }
         }
+      } catch(e) {
+        console.error(e);
+      }
     }
   };
 
@@ -209,113 +205,185 @@ const CategoryPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      
-      {/* --- HERO SECTION --- */}
-      <div className="relative bg-gray-900 text-white py-24 px-6 overflow-hidden">
-        <div className="absolute inset-0 opacity-40">
-            <img src={cover5} className="w-full h-full object-cover blur-sm" alt="Background" />
+    <div className="min-h-screen bg-slate-950 text-slate-50 pb-20">
+      {/* HERO */}
+      <div className="relative bg-slate-950 text-slate-50 py-24 px-6 overflow-hidden">
+        <div className="absolute inset-0 opacity-30">
+          <img src={cover5} className="w-full h-full object-cover blur-md" alt="Background" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent" />
         <div className="relative max-w-6xl mx-auto z-10 text-center">
-            <button onClick={() => navigate('/')} className="absolute top-[-60px] left-0 text-gray-400 hover:text-white flex items-center gap-1 transition-colors">
-                <ChevronLeft size={20} /> Back to Dashboard
-            </button>
-            <h1 className="text-3xl md:text-5xl font-extrabold italic font-serif leading-tight mb-4 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">
-                "Focus more on your desire than on your doubt,<br/>and the dream will take care of itself."
-            </h1>
-            <p className="text-gray-400 mt-4 text-sm font-medium tracking-widest uppercase">— Mark Twain</p>
+          <button
+            onClick={() => navigate('/')}
+            className="absolute top-[-60px] left-0 text-slate-400 hover:text-slate-100 flex items-center gap-1 transition-colors"
+          >
+            <ChevronLeft size={20} /> Back to Dashboard
+          </button>
+          <h1 className="text-3xl md:text-5xl font-extrabold italic font-serif leading-tight mb-4 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">
+            "Focus more on your desire than on your doubt,<br/>and the dream will take care of itself."
+          </h1>
+          <p className="text-slate-400 mt-4 text-sm font-medium tracking-widest uppercase">
+            — Mark Twain
+          </p>
         </div>
       </div>
 
-      {/* --- QUICK NAV --- */}
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+      {/* QUICK NAV */}
+      <div className="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-slate-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-3 flex gap-4 overflow-x-auto no-scrollbar">
-            {CATEGORY_SECTIONS.map(section => (
-                <a key={section.id} href={`#${section.id}`} className="whitespace-nowrap px-4 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-sm font-semibold text-gray-700 transition-all hover:scale-105">
-                    {section.title}
-                </a>
-            ))}
+          {CATEGORY_SECTIONS.map(section => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              className="whitespace-nowrap px-4 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-sm font-semibold text-slate-200 transition-all hover:scale-105 border border-slate-800"
+            >
+              {section.title}
+            </a>
+          ))}
         </div>
       </div>
 
-      {/* --- CATEGORY ROWS --- */}
+      {/* CATEGORY ROWS */}
       <div className="max-w-[1600px] mx-auto px-4 py-10 space-y-16">
         {CATEGORY_SECTIONS.map((section) => {
-            const sectionBooks = ALL_BOOKS.filter(b => b.category === section.filter);
-            return (
-                <div key={section.id} id={section.id} className="relative group">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className={`h-8 w-1.5 rounded-full bg-gradient-to-b ${section.color}`}></div>
-                        <h2 className="text-2xl md:text-3xl font-bold text-gray-800">{section.title}</h2>
-                        <span className="text-gray-400 text-sm ml-auto hidden md:inline-block">Swipe to see more →</span>
+          const sectionBooks = ALL_BOOKS.filter(b => b.category === section.filter);
+          return (
+            <div key={section.id} id={section.id} className="relative group">
+              <div className="flex items-center gap-4 mb-6">
+                <div className={`h-8 w-1.5 rounded-full bg-gradient-to-b ${section.color}`} />
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-50">
+                  {section.title}
+                </h2>
+                <span className="text-slate-500 text-sm ml-auto hidden md:inline-block">
+                  Swipe to see more →
+                </span>
+              </div>
+
+              <button
+                onClick={() => scrollRow(`row-${section.id}`, 'left')}
+                className="absolute left-0 top-[55%] -translate-y-1/2 z-20 bg-slate-950/90 p-3 rounded-full shadow-2xl hover:bg-slate-900 hover:scale-110 transition-all hidden group-hover:block border border-slate-700 text-slate-200"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                onClick={() => scrollRow(`row-${section.id}`, 'right')}
+                className="absolute right-0 top-[55%] -translate-y-1/2 z-20 bg-slate-950/90 p-3 rounded-full shadow-2xl hover:bg-slate-900 hover:scale-110 transition-all hidden group-hover:block border border-slate-700 text-slate-200"
+              >
+                <ChevronRight size={24} />
+              </button>
+
+              <div
+                id={`row-${section.id}`}
+                className="flex gap-6 overflow-x-auto pb-8 pt-2 px-2 scroll-smooth no-scrollbar"
+              >
+                {sectionBooks.map(book => (
+                  <div
+                    key={book.id}
+                    className="flex-shrink-0 w-[220px] bg-slate-900 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border border-slate-800 relative group/card"
+                  >
+                    <div className="absolute top-2 right-2 z-10 opacity-0 group-hover/card:opacity-100 transition-opacity">
+                      {savedBookIds.includes(book.id) ? (
+                        <div className="bg-emerald-500 text-white p-1.5 rounded-full shadow-lg">
+                          <CheckCircle2 size={16} />
+                        </div>
+                      ) : (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleAddToLibrary(book); }}
+                          className="bg-slate-900 text-slate-100 p-1.5 rounded-full shadow-lg hover:bg-sky-500 hover:text-white transition-colors"
+                          title="Add to Library"
+                        >
+                          <Plus size={18} />
+                        </button>
+                      )}
                     </div>
-                    <button onClick={() => scrollRow(`row-${section.id}`, 'left')} className="absolute left-0 top-[55%] -translate-y-1/2 z-20 bg-white/90 p-3 rounded-full shadow-xl hover:bg-white hover:scale-110 transition-all hidden group-hover:block border border-gray-100"><ChevronLeft size={24} className="text-gray-700" /></button>
-                    <button onClick={() => scrollRow(`row-${section.id}`, 'right')} className="absolute right-0 top-[55%] -translate-y-1/2 z-20 bg-white/90 p-3 rounded-full shadow-xl hover:bg-white hover:scale-110 transition-all hidden group-hover:block border border-gray-100"><ChevronRight size={24} className="text-gray-700" /></button>
-                    <div id={`row-${section.id}`} className="flex gap-6 overflow-x-auto pb-8 pt-2 px-2 scroll-smooth no-scrollbar">
-                        {sectionBooks.map(book => (
-                            <div key={book.id} className="flex-shrink-0 w-[220px] bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border border-gray-100 relative group/card">
-                                <div className="absolute top-2 right-2 z-10 opacity-0 group-hover/card:opacity-100 transition-opacity">
-                                    {savedBookIds.includes(book.id) ? (
-                                        <div className="bg-green-500 text-white p-1.5 rounded-full shadow-lg"><CheckCircle2 size={16} /></div>
-                                    ) : (
-                                        <button onClick={(e) => { e.stopPropagation(); handleAddToLibrary(book); }} className="bg-white text-gray-800 p-1.5 rounded-full shadow-lg hover:bg-blue-500 hover:text-white transition-colors" title="Add to Library"><Plus size={18} /></button>
-                                    )}
-                                </div>
-                                <div className="h-[320px] w-full bg-gray-200 relative overflow-hidden">
-                                    <img src={book.cover} alt={book.title} className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500" />
-                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/card:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
-                                        <button 
-                                            onClick={() => handleOpenBook(book)}
-                                            className="bg-white text-gray-900 px-6 py-2.5 rounded-full font-bold hover:bg-blue-500 hover:text-white transition-all transform hover:scale-105 flex items-center gap-2"
-                                        >
-                                            <BookOpen size={18} /> Read Now
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="p-4">
-                                    <h3 className="font-bold text-gray-800 text-lg truncate">{book.title}</h3>
-                                    <p className="text-gray-500 text-sm">{book.author}</p>
-                                </div>
-                            </div>
-                        ))}
+
+                    <div className="h-[320px] w-full bg-slate-800 relative overflow-hidden">
+                      <img
+                        src={book.cover}
+                        alt={book.title}
+                        className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
+                        <button
+                          onClick={() => handleOpenBook(book)}
+                          className="bg-white text-slate-900 px-6 py-2.5 rounded-full font-bold hover:bg-sky-500 hover:text-white transition-all transform hover:scale-105 flex items-center gap-2"
+                        >
+                          <BookOpen size={18} /> Read Now
+                        </button>
+                      </div>
                     </div>
-                </div>
-            );
+
+                    <div className="p-4">
+                      <h3 className="font-bold text-slate-50 text-lg truncate">
+                        {book.title}
+                      </h3>
+                      <p className="text-slate-400 text-sm">{book.author}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
         })}
       </div>
 
-      {/* --- PDF MODAL --- */}
+      {/* PDF MODAL */}
       {openPdfId && currentOpenBook && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-6xl h-[90vh] rounded-2xl overflow-hidden flex flex-col shadow-2xl">
-              <div className="bg-white p-4 border-b flex justify-between items-center shadow-sm z-10">
-                <div><h2 className="font-bold text-lg text-gray-800">{currentOpenBook.title}</h2><p className="text-xs text-gray-500">{currentOpenBook.author}</p></div>
-                <div className="flex items-center gap-4">
-                  {isLoggedIn && (
-                    <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg">
-                      <span className="text-sm font-medium text-gray-600">Page:</span>
-                      <input type="number" className="w-12 bg-white border border-gray-300 rounded p-1 text-center text-sm" value={pageInput} onChange={(e) => setPageInput(e.target.value)} />
-                      <span className="text-sm text-gray-400">/ {currentOpenBook.totalPages}</span>
-                      <button onClick={() => handleSaveProgress(currentOpenBook)} className="bg-blue-600 text-white p-1.5 rounded hover:bg-blue-700 transition-colors" title="Save Progress"><Save size={14} /></button>
-                    </div>
-                  )}
-                  <button onClick={() => setOpenPdfId(null)} className="p-2 hover:bg-red-50 text-gray-500 hover:text-red-500 rounded-full transition-colors"><X size={24} /></button>
-                </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+          <div className="bg-slate-950 w-full max-w-6xl h-[90vh] rounded-2xl overflow-hidden flex flex-col shadow-2xl border border-slate-800">
+            <div className="bg-slate-900 p-4 border-b border-slate-800 flex justify-between items-center">
+              <div>
+                <h2 className="font-bold text-lg text-slate-50">
+                  {currentOpenBook.title}
+                </h2>
+                <p className="text-xs text-slate-400">
+                  {currentOpenBook.author}
+                </p>
               </div>
-              <div className="flex-1 bg-gray-100 relative">
-                {/* ✅ FIXED: Use pageInput in src and key to force refresh */}
-                <iframe 
-                  key={`${openPdfId}-${pageInput}`}
-                  src={`${currentOpenBook.pdf}#page=${pageInput}&toolbar=0`} 
-                  className="w-full h-full absolute inset-0"
-                  title={currentOpenBook.title}
-                />
+              <div className="flex items-center gap-4">
+                {isLoggedIn && (
+                  <div className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg">
+                    <span className="text-sm font-medium text-slate-100">
+                      Page:
+                    </span>
+                    <input
+                      type="number"
+                      className="w-12 bg-slate-950 border border-slate-700 rounded p-1 text-center text-sm text-slate-50"
+                      value={pageInput}
+                      onChange={(e) => setPageInput(e.target.value)}
+                    />
+                    <span className="text-sm text-slate-400">
+                      / {currentOpenBook.totalPages}
+                    </span>
+                    <button
+                      onClick={() => handleSaveProgress(currentOpenBook)}
+                      className="bg-sky-600 text-white p-1.5 rounded hover:bg-sky-500 transition-colors"
+                      title="Save Progress"
+                    >
+                      <Save size={14} />
+                    </button>
+                  </div>
+                )}
+                <button
+                  onClick={() => setOpenPdfId(null)}
+                  className="p-2 hover:bg-red-500/10 text-slate-500 hover:text-red-400 rounded-full transition-colors"
+                >
+                  <X size={24} />
+                </button>
               </div>
             </div>
-          </div>
-        )}
 
+            <div className="flex-1 bg-slate-900 relative">
+              <iframe
+                key={`${openPdfId}-${pageInput}`}
+                src={`${currentOpenBook.pdf}#page=${pageInput}&toolbar=0`}
+                className="w-full h-full absolute inset-0"
+                title={currentOpenBook.title}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
