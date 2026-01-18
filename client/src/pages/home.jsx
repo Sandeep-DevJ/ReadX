@@ -25,6 +25,8 @@ import cover3 from '../assets/h3rd.png';  import pdf3 from '../assets/3rd.pdf';
 import cover4 from '../assets/h4th.png';  import pdf4 from '../assets/4th.pdf';
 import cover5 from '../assets/h5th.png';  import pdf5 from '../assets/5th.pdf';
 
+
+const API_URL = import.meta.env.VITE_API_URL;
 const ALL_BOOKS = [
   { id: 1, title: "The Great Gatsby", author: "F. Scott Fitzgerald", cover: cover1, pdf: pdf1, totalPages: 200 },
   { id: 2, title: "Atomic Habits", author: "James Clear", cover: cover2, pdf: pdf2, totalPages: 300 },
@@ -55,7 +57,7 @@ const WelcomePage = () => {
       if (!accessToken) return;
 
       try {
-        const res = await axios.get('http://localhost:8000/api/library/stats', {
+        const res = await axios.get(`${API_URL}/api/library/stats`, {
           headers: { Authorization: `Bearer ${accessToken}` }
         });
 
@@ -86,7 +88,7 @@ const WelcomePage = () => {
   // --- LOGOUT ---
   const LogoutoutHandler = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/api/user/logout", {}, {
+      const res = await axios.post(`${API_URL}/api/user/logout`, {}, {
         headers: { authorization: `Bearer ${accessToken}` }
       });
       if (res.data.success) {
@@ -107,7 +109,7 @@ const WelcomePage = () => {
     if (isNaN(newPage) || newPage < 1) return toast.error("Invalid page");
 
     try {
-      const res = await axios.post("http://localhost:8000/api/library/update-progress", {
+      const res = await axios.post(`${API_URL}/api/library/update-progress`, {
         bookId: book.id,
         title: book.title,
         currentPage: newPage,
@@ -129,7 +131,7 @@ const WelcomePage = () => {
     if (!accessToken) return toast.error('Please login');
     try {
       const res = await axios.post(
-        'http://localhost:8000/api/library/update-notes', 
+        `${API_URL}/api/library/update-notes`, 
         { bookId, notes }, 
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );

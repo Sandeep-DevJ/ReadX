@@ -52,6 +52,9 @@ import coverSC6 from '../assets/sc6.png'; import pdfSC6 from '../assets/sc6.pdf'
 import coverSC7 from '../assets/sc7.png'; import pdfSC7 from '../assets/sc7.pdf';
 import coverSC8 from '../assets/sc8.png'; import pdfSC8 from '../assets/sc8.pdf';
 
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 // ================= BOOK DATABASE =================
 const ALL_BOOKS = [
   // Programming
@@ -121,7 +124,7 @@ const CategoryPage = () => {
       if (!isLoggedIn) return;
       try {
         const token = localStorage.getItem("accessToken");
-        const res = await axios.get("http://localhost:8000/api/library/my-library", {
+        const res = await axios.get(`${API_URL}/api/library/my-library`, {
           headers: { authorization: `Bearer ${token}` }
         });
         if (res.data.success) {
@@ -142,7 +145,7 @@ const CategoryPage = () => {
     if (isLoggedIn) {
       try {
         const token = localStorage.getItem("accessToken");
-        const res = await axios.get("http://localhost:8000/api/library/my-library", {
+        const res = await axios.get(`${API_URL}/api/library/my-library`, {
           headers: { authorization: `Bearer ${token}` }
         });
         if(res.data.success) {
@@ -162,7 +165,7 @@ const CategoryPage = () => {
     if (!accessToken) return toast.error("Please login to save books!");
 
     try {
-      const res = await axios.post("http://localhost:8000/api/library/add-to-library", {
+      const res = await axios.post(`${API_URL}/api/library/add-to-library`, {
         bookId: book.id, title: book.title, totalPages: book.totalPages
       }, { headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" } });
 
@@ -182,7 +185,7 @@ const CategoryPage = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.post("http://localhost:8000/api/library/update-progress", {
+      await axios.post(`${API_URL}/api/library/update-progress`, {
         bookId: book.id, title: book.title, currentPage: newPage, 
         totalPages: book.totalPages, isFinished: newPage === book.totalPages
       }, { headers: { authorization: `Bearer ${token}` } });

@@ -47,7 +47,7 @@ import coverSC5 from '../assets/sc5.png'; import pdfSC5 from '../assets/sc5.pdf'
 import coverSC6 from '../assets/sc6.png'; import pdfSC6 from '../assets/sc6.pdf';
 import coverSC7 from '../assets/sc7.png'; import pdfSC7 from '../assets/sc7.pdf';
 import coverSC8 from '../assets/sc8.png'; import pdfSC8 from '../assets/sc8.pdf';
-
+const API_URL = import.meta.env.VITE_API_URL;
 const ALL_BOOKS = [
   { id: 1, title: "C++ Programming", author: "Tech Series", cover: cover1, pdf: pdf1, totalPages: 200 },
   { id: 2, title: "Advanced C++", author: "Tech Series", cover: cover2, pdf: pdf2, totalPages: 300 },
@@ -101,7 +101,7 @@ const ProfilePage = () => {
   // --- LOGOUT HANDLER ---
   const handleLogout = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/user/logout", {}, {
+      const res = await axios.post(`${API_URL}/user/logout`, {}, {
         headers: { authorization: `Bearer ${accessToken}` }
       });
       if (res.data.success) {
@@ -126,12 +126,12 @@ const ProfilePage = () => {
 
       try {
         // 1. Get Library & Progress
-        const resLibrary = await axios.get("http://localhost:8000/api/library/my-library", {
+        const resLibrary = await axios.get(`${API_URL}/api/library/my-library`, {
           headers: { authorization: `Bearer ${accessToken}` }
         });
 
         // 2. Get Stats
-        const resStats = await axios.get("http://localhost:8000/api/library/stats", {
+        const resStats = await axios.get(`${API_URL}/api/library/stats`, {
           headers: { authorization: `Bearer ${accessToken}` }
         });
 
@@ -177,7 +177,7 @@ const ProfilePage = () => {
     if (!confirm("Are you sure you want to remove this book from your library?")) return;
 
     try {
-      const res = await axios.post("http://localhost:8000/api/library/remove-from-library", 
+      const res = await axios.post(`${API_URL}/api/library/remove-from-library`, 
         { bookId }, 
         { headers: { authorization: `Bearer ${accessToken}` } }
       );

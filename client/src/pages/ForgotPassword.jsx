@@ -18,6 +18,8 @@ import axios from 'axios'
 import { useUser } from '@/context/userContext'
 import { toast } from 'sonner'
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ForgotPassword = () => {
   const [isloading, setIsloading] = useState(false)
   const [error, setError] = useState("")
@@ -32,7 +34,7 @@ const ForgotPassword = () => {
 
     try {
       setIsloading(true)
-      const res = await axios.post('http://localhost:8000/api/user/forgotPassword', { email })
+      const res = await axios.post(`${API_URL}/api/user/forgotPassword`, { email })
 
       if (res.data.success) {
         // only do this if your API actually returns user here

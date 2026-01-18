@@ -6,6 +6,8 @@ import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
+
+const API_URL = import.meta.env.VITE_API_URL;
 const ChangePassword = () => {
     const { email } = useParams()
     const [error, setError] = React.useState("")
@@ -29,7 +31,7 @@ const ChangePassword = () => {
     try {
         setIsLoading(true)
         const response = await axios.post(
-            `http://localhost:8000/api/user/changePassword/${email}`,
+            `${API_URL}/api/user/changePassword/${email}`,
             { newPassword, confirmPassword: confirmNewPassword }
           )
           setSuccess(response.data.message)

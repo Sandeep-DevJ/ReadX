@@ -15,6 +15,8 @@ import axios from "axios"
 import { toast } from "sonner"
 import { useNavigate, Link } from "react-router-dom"   // <-- added Link
 
+
+const API_URL = import.meta.env.VITE_API_URL;
 const Signup = () => {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = React.useState(false)
@@ -38,7 +40,7 @@ const Signup = () => {
     setIsloading(true)
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/user/register",
+        `${API_URL}/api/user/register`,
         formData,
         { headers: { "Content-Type": "application/json" } }
       )

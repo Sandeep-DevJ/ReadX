@@ -103,6 +103,8 @@ const ALL_BOOKS = [
   { id: 36, title: "Beyond Good and Evil", author: "Friedrich Nietzsche", category: "Classic", cover: coverSC6, pdf: pdfSC6, totalPages: 240 },
 ];
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const LibraryPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -136,7 +138,7 @@ const LibraryPage = () => {
 
       try {
         const token = localStorage.getItem("accessToken");
-        const res = await axios.get("http://localhost:8000/api/library/my-library", {
+        const res = await axios.get(`${API_URL}/api/library/my-library`, {
           headers: { authorization: `Bearer ${token}` }
         });
 
@@ -182,7 +184,7 @@ const LibraryPage = () => {
 
     try {
       const res = await axios.post(
-        'http://localhost:8000/api/library/update-notes',
+        `${API_URL}/api/library/update-notes`,
         { bookId, notes },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -205,7 +207,7 @@ const LibraryPage = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/library/add-to-library",
+        `${API_URL}/api/library/add-to-library`,
         {
           bookId: book.id,
           title: book.title,
@@ -233,7 +235,7 @@ const LibraryPage = () => {
     try {
       const token = localStorage.getItem("accessToken");
       const res = await axios.post(
-        "http://localhost:8000/api/library/remove-from-library",
+        `${API_URL}/api/library/remove-from-library`,
         { bookId: book.id },
         { headers: { authorization: `Bearer ${token}` } }
       );
@@ -258,7 +260,7 @@ const LibraryPage = () => {
     try {
       const token = localStorage.getItem("accessToken");
       const res = await axios.post(
-        "http://localhost:8000/api/library/update-progress",
+        `${API_URL}/api/library/update-progress`,
         {
           bookId: book.id,
           title: book.title,

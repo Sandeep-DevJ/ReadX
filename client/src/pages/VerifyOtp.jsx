@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { CheckCircle, Loader2, RotateCcw } from 'lucide-react'
 
+
+const API_URL = import.meta.env.VITE_API_URL;
 const VerifyOtp = () => {
   const [isverified, setIsVerified] = React.useState(false)
   const [error, setError] = React.useState("")
@@ -38,7 +40,7 @@ const VerifyOtp = () => {
     try {
       setIsLoading(true)
       const response = await axios.post(
-        `http://localhost:8000/api/user/verifyOtp/${email}`,
+        `${API_URL}/api/user/verifyOtp/${email}`,
         { otp: finalOtp }
       )
       setSuccessMessage(response.data.message)
